@@ -1,19 +1,24 @@
 package org.skypro.skyshop;
 
-import org.skypro.skyshop.product.Product;
+import org.skypro.skyshop.product.*;
 import org.skypro.skyshop.basket.ProductBasket;
+import org.skypro.skyshop.product.DiscountedProduct;
+import org.skypro.skyshop.product.FixPriceProduct;
 
 public class App {
     public static void main(String[] args) {
-        Product dogFood = new Product("Корм для собак сухой", 4000);
-        Product catFood = new Product("Корм для стерилизованных кошек", 2500);
-        Product aquarium = new Product("Аквариум 50л с подсветкой", 7900);
-        Product parrotCage = new Product("Клетка для попугаев большая", 5500);
-        Product hamsterWheel = new Product("Беговое колесо для хомяка", 1250);
-        Product dogCollar = new Product("Кожаный ошейник для собак", 1400);
-        Product catTree = new Product("Игровой комплекс для кошек", 8950);
-        Product fishFood = new Product("Корм для рыб", 650);
-        Product parrotFood = new Product("Корм для попугаев", 750);
+        Product dogFood = new SimpleProduct("Корм для собак сухой", 4000);
+        Product catFood = new SimpleProduct("Корм для стерилизованных кошек", 2500);
+
+        Product aquarium = new DiscountedProduct("Аквариум 50л с подсветкой", 8000, 10);
+        Product parrotCage = new DiscountedProduct("Клетка для попугаев большая", 6000, 15);
+
+        Product hamsterWheel = new FixPriceProduct("Беговое колесо для хомяка");
+        Product dogCollar = new FixPriceProduct("Кожаный ошейник для собак");
+
+        Product catTree = new SimpleProduct("Игровой комплекс для кошек",8950);
+        Product fishFood = new SimpleProduct("Корм для рыб",650);
+        Product parrotFood = new SimpleProduct("Корм для попугаев",750);
 
         ProductBasket basket = new ProductBasket();
 
@@ -22,7 +27,6 @@ public class App {
         basket.addProduct(catFood);
         basket.addProduct(catTree);
 
-        System.out.println("Содержимое корзины: ");
         basket.printBasket();
 
         System.out.println("Общая стоимость корзины: " + basket.getTotalCost() + " руб.");
@@ -62,5 +66,10 @@ public class App {
             boolean found = secondBasket.containsProductByName(item);
             System.out.println("'" + item + "': " + (found ? "В корзине" : "Нет в корзине"));
         }
+
+        System.out.println("\nПопытка добавить пятый товар:");
+        Product testProduct = new SimpleProduct("Тестовый товар", 1000);
+        basket.addProduct(testProduct);
+        System.out.println("Корзина полна: " + basket.isFull());
     }
 }

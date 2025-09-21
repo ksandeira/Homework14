@@ -1,6 +1,6 @@
 package org.skypro.skyshop.product;
 
-public class Product {
+public abstract class Product {
     private final String name;
     private final int cost;
 
@@ -15,5 +15,12 @@ public class Product {
 
     public int getCost() {
         return cost;
+    }
+
+    public abstract  boolean isSpecial();
+
+    @Override
+    public String toString() {
+        return getName() + ": " + getCost() + " руб.";
     }
 }

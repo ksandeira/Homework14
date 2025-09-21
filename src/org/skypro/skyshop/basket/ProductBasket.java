@@ -17,7 +17,7 @@ public class ProductBasket {
             products[productCount] = product;
             productCount++;
         } else {
-            System.out.println("Корзина заполнена!" + product.getName());
+            System.out.println("Корзина заполнена! Нельзя добавить: " + product.getName());
         }
     }
 
@@ -34,10 +34,19 @@ public class ProductBasket {
             System.out.println("В корзине пусто");
             return;
         }
+
+        System.out.println("Содержимое корзины:");
+        int specialCount = 0;
         for (int i = 0; i < productCount; i++) {
-            System.out.println(products[i].getName() + ": " + products[i].getCost() + " руб.");
+            System.out.println((i + 1) + ". " + products[i].toString());
+            if (products[i].isSpecial()) {
+                specialCount++;
+            }
         }
+
         System.out.println("Итого: " + getTotalCost() + " руб.");
+        System.out.println("Специальных товаров: " + specialCount);
+        System.out.println("Общее количество товаров: " + productCount);
     }
 
     public boolean containsProductByName(String name) {
@@ -50,10 +59,18 @@ public class ProductBasket {
     }
 
     public void clearBasket() {
-        for (int i = 0; i < productCount; i++) {
-            products[i] = null;
-        }
         productCount = 0;
     }
 
+    public int getProductCount() {
+        return productCount;
+    }
+
+    public boolean isFull() {
+        return productCount >= MAX_CAPACITY;
+    }
+
+    public boolean isEmpty() {
+        return productCount == 0;
+    }
 }
