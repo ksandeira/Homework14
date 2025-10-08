@@ -6,11 +6,37 @@ import org.skypro.skyshop.product.DiscountedProduct;
 import org.skypro.skyshop.product.FixPriceProduct;
 import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.search.Searchable;
+import org.skypro.skyshop.exception.BestResultNotFound;
 
 import java.util.Arrays;
 
 public class App {
     public static void main(String[] args) {
+        System.out.println("Демонстрация проверки данных:");
+        try {
+            Product invalidProduct1 = new SimpleProduct("", 1000);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта: " + e.getMessage());
+        }
+
+        try {
+            Product invalidProduct2 = new SimpleProduct("Тестовый товар", 0);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта: " + e.getMessage());
+        }
+
+        try {
+            Product invalidProduct3 = new DiscountedProduct("Товар со скидкой", 1000, -10);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта со скидкой: " + e.getMessage());
+        }
+
+        try {
+            Product invalidProduct4 = new DiscountedProduct("Товар со скидкой", 1000, 150);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта со скидкой: " + e.getMessage());
+        }
+
         Product dogFood = new SimpleProduct("Корм для собак сухой", 4000);
         Product catFood = new SimpleProduct("Корм для стерилизованных кошек", 2500);
 
@@ -20,9 +46,9 @@ public class App {
         Product hamsterWheel = new FixPriceProduct("Беговое колесо для хомяка");
         Product dogCollar = new FixPriceProduct("Кожаный ошейник для собак");
 
-        Product catTree = new SimpleProduct("Игровой комплекс для кошек",8950);
-        Product fishFood = new SimpleProduct("Корм для рыб",650);
-        Product parrotFood = new SimpleProduct("Корм для попугаев",750);
+        Product catTree = new SimpleProduct("Игровой комплекс для кошек", 8950);
+        Product fishFood = new SimpleProduct("Корм для рыб", 650);
+        Product parrotFood = new SimpleProduct("Корм для попугаев", 750);
 
         Article dogCareArticle = new Article("Содержание собак", "Правильный уход за собаками включает регулярное кормление, ежедневные прогулки и своевременные ветеринарные осмотры.");
 
@@ -112,7 +138,7 @@ public class App {
 
         String[] searchQueries = {"корм", "аквариум", "попугай", "уход"};
         for (String query : searchQueries) {
-            System.out.println("Результаты поиска по запросу: '" + query + "'" );
+            System.out.println("Результаты поиска по запросу: '" + query + "'");
             Searchable[] results = searchEngine.search(query);
 
             boolean foundAny = false;
@@ -142,6 +168,32 @@ public class App {
                 } else if (result instanceof Article) {
                     System.out.println("Содержание: " + ((Article) result).getContent().substring(0, 50) + "...");
                 }
+            }
+        }
+
+        System.out.println("Демонстрация нового метода поиска:");
+
+        try {
+            Searchable bestMatch = searchEngine.findBestMatch("корм");
+            System.out.println("Наиболее подходящий результат для 'корм': " + bestMatch.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Ошибка при поиске: " + e.getMessage());
+        }
+
+        try {
+            Searchable bestMatch = searchEngine.findBestMatch("несуществующий запрос");
+            System.out.println("Наиболее подходящий результат: " + bestMatch.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Ошибка при поиске: " + e.getMessage());
+        }
+
+        String[] testQueries = {"собак", "кошек", "попугаев", "рыб"};
+        for (String query : testQueries) {
+            try {
+                Searchable bestMatch = searchEngine.findBestMatch(query);
+                System.out.println("Лучший результат для '" + query + "':" + bestMatch.getStringRepresentation());
+            } catch (BestResultNotFound e) {
+                System.out.println("Для запроса '" + query + "' ничего не найдено: " + e.getMessage());
             }
         }
     }
