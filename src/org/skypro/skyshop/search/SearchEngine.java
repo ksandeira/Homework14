@@ -1,33 +1,25 @@
 package org.skypro.skyshop.search;
 
 import org.skypro.skyshop.exception.BestResultNotFound;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SearchEngine {
-    private final Searchable[] searchables;
-    private int currentIndex;
+    private final List<Searchable> searchables;
 
     public SearchEngine(int capacity) {
-        this.searchables = new Searchable[capacity];
-        this.currentIndex = 0;
+        this.searchables = new ArrayList<>(capacity);
     }
 
     public void add(Searchable searchable) {
-        if (currentIndex < searchables.length) {
-            searchables[currentIndex] = searchable;
-            currentIndex++;
-        } else {
-            System.out.println("Нельзя добавить: " + searchable.getName());
-        }
+        searchables.add(searchable);
     }
 
-    public Searchable[] search(String query) {
-        Searchable[] results = new Searchable[5];
-        int resultIndex = 0;
-        for (int i = 0; i < currentIndex && resultIndex < 5; i++) {
-            Searchable item = searchables[i];
+    public List<Searchable> search(String query) {
+        List<Searchable> results = new ArrayList<>();
+        for (Searchable item : searchables) {
             if (item != null && item.getSearchTerm().toLowerCase().contains(query.toLowerCase())) {
-                results[resultIndex] = item;
-                resultIndex++;
+                results.add(item);
             }
         }
         return results;
@@ -41,8 +33,7 @@ public class SearchEngine {
         int maxCount = -1;
         String searchLower = search.toLowerCase();
 
-        for (int i = 0; i < currentIndex; i++) {
-            Searchable item = searchables[i];
+        for (Searchable item : searchables) {
             if (item != null) {
                 String searchTerm = item.getSearchTerm().toLowerCase();
                 int count = countOccurrences(searchTerm, searchLower);

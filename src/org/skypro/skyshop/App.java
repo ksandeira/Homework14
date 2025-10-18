@@ -8,7 +8,7 @@ import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.search.Searchable;
 import org.skypro.skyshop.exception.BestResultNotFound;
 
-import java.util.Arrays;
+import java.util.List;
 
 public class App {
     public static void main(String[] args) {
@@ -100,6 +100,30 @@ public class App {
         System.out.println("Кожаный ошейник для собак: " +
                 (basket.containsProductByName("Кожаный ошейник для собак") ? "найден" : "не найден"));
 
+        // Демонстрация нового метода удаления по имени
+        System.out.println("\n=== Демонстрация удаления продуктов по имени ===");
+
+        // Удаление существующего продукта
+        System.out.println("1. Удаление существующего продукта 'Кожаный ошейник для собак':");
+        List<Product> removedProducts = basket.removeProductsByName("Кожаный ошейник для собак");
+        System.out.println("Удаленные продукты:");
+        if (!removedProducts.isEmpty()) {
+            for (Product product : removedProducts) {
+                System.out.println(" - " + product);
+            }
+        }
+        System.out.println("Содержимое корзины после удаления:");
+        basket.printBasket();
+
+        // Удаление несуществующего продукта
+        System.out.println("\n2. Удаление несуществующего продукта 'Несуществующий товар':");
+        List<Product> removedNonExistent = basket.removeProductsByName("Несуществующий товар");
+        if (removedNonExistent.isEmpty()) {
+            System.out.println("Список удаленных продуктов пуст");
+        }
+        System.out.println("Содержимое корзины после попытки удаления несуществующего товара:");
+        basket.printBasket();
+
         System.out.println("Очистка корзины");
         basket.clearBasket();
 
@@ -139,36 +163,33 @@ public class App {
         String[] searchQueries = {"корм", "аквариум", "попугай", "уход"};
         for (String query : searchQueries) {
             System.out.println("Результаты поиска по запросу: '" + query + "'");
-            Searchable[] results = searchEngine.search(query);
+            List<Searchable> results = searchEngine.search(query);
 
-            boolean foundAny = false;
-            for (Searchable result : results) {
-                if (result != null) {
-                    System.out.println("-" + result.getStringRepresentation());
-                    foundAny = true;
+            if (!results.isEmpty()) {
+                for (Searchable result : results) {
+                    System.out.println("- " + result.getStringRepresentation());
                 }
-            }
-            if (!foundAny) {
+            } else {
                 System.out.println("Ничего не найдено");
             }
         }
 
-        System.out.println("Проверка ограничения в 5 результатов:");
-        Searchable[] manyResults = searchEngine.search("о");
-        System.out.println("Найдено результов(первые 5) : " + Arrays.toString(manyResults));
+        System.out.println("Проверка ограничения в 5 результатов (теперь нет ограничения):");
+        List<Searchable> manyResults = searchEngine.search("о");
+        System.out.println("Найдено результатов: " + manyResults.size());
 
         System.out.println("Детальная информация о найденных объектах:");
-        Searchable[] detailedResults = searchEngine.search("корм для кошек");
+        List<Searchable> detailedResults = searchEngine.search("корм для кошек");
         for (Searchable result : detailedResults) {
-            if (result != null) {
-                System.out.println("Тип: " + result.getContentType());
-                System.out.println("Представление: " + result.getStringRepresentation());
-                if (result instanceof Product) {
-                    System.out.println("Стоимость: " + ((Product) result).getCost() + " руб.");
-                } else if (result instanceof Article) {
-                    System.out.println("Содержание: " + ((Article) result).getContent().substring(0, 50) + "...");
-                }
+            System.out.println("Тип: " + result.getContentType());
+            System.out.println("Представление: " + result.getStringRepresentation());
+            if (result instanceof Product) {
+                System.out.println("Стоимость: " + ((Product) result).getCost() + " руб.");
+            } else if (result instanceof Article) {
+                String content = ((Article) result).getContent();
+                System.out.println("Содержание: " + (content.length() > 50 ? content.substring(0, 50) + "..." : content));
             }
+            System.out.println("---");
         }
 
         System.out.println("Демонстрация нового метода поиска:");

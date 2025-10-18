@@ -1,57 +1,53 @@
 package org.skypro.skyshop.basket;
 
 import org.skypro.skyshop.product.Product;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class ProductBasket {
-    private static final int MAX_CAPACITY = 5;
-    private final Product[] products;
-    private int productCount;
+    private final List<Product> products;
 
     public ProductBasket() {
-        this.products = new Product[MAX_CAPACITY];
-        this.productCount = 0;
+        this.products = new ArrayList<>();
     }
 
     public void addProduct(Product product) {
-        if (productCount < MAX_CAPACITY) {
-            products[productCount] = product;
-            productCount++;
-        } else {
-            System.out.println("Корзина заполнена! Нельзя добавить: " + product.getName());
-        }
+        products.add(product);
     }
 
     public int getTotalCost() {
         int total = 0;
-        for (int i = 0; i < productCount; i++) {
-            total += products[i].getCost();
+        for (Product product : products) {
+            total += product.getCost();
         }
         return total;
     }
 
     public void printBasket() {
-        if (productCount == 0) {
-            System.out.println("В корзине пусто");
+        if (products.isEmpty()) {
+            System.out.println("В корзине пусто.");
             return;
         }
 
         System.out.println("Содержимое корзины:");
         int specialCount = 0;
-        for (int i = 0; i < productCount; i++) {
-            System.out.println((i + 1) + ". " + products[i].toString());
-            if (products[i].isSpecial()) {
+        int index = 1;
+        for (Product product : products) {
+            System.out.println((index ++) + ". " + product.toString());
+            if (product.isSpecial()) {
                 specialCount++;
             }
         }
 
         System.out.println("Итого: " + getTotalCost() + " руб.");
         System.out.println("Специальных товаров: " + specialCount);
-        System.out.println("Общее количество товаров: " + productCount);
+        System.out.println("Общее количество товаров: " + products.size());
     }
 
     public boolean containsProductByName(String name) {
-        for (int i = 0; i < productCount; i++) {
-            if (products[i].getName().equalsIgnoreCase(name)) {
+        for (Product product : products) {
+            if (product.getName().equalsIgnoreCase(name)) {
                 return true;
             }
         }
@@ -59,18 +55,33 @@ public class ProductBasket {
     }
 
     public void clearBasket() {
-        productCount = 0;
+        products.clear();
     }
 
     public int getProductCount() {
-        return productCount;
+        return products.size();
     }
 
     public boolean isFull() {
-        return productCount >= MAX_CAPACITY;
+        return false;
     }
 
     public boolean isEmpty() {
-        return productCount == 0;
+        return products.isEmpty();
     }
+
+    public List<Product> removeProductsByName(String name) {
+        List<Product> removedProducts = new ArrayList<>();
+        Iterator<Product> iterator = products.iterator();
+
+        while (iterator.hasNext()) {
+            Product product = iterator.next();
+            if (product.getName().equalsIgnoreCase(name)) {
+                removedProducts.add(product);
+                iterator.remove();
+            }
+        }
+        return removedProducts;
+    }
+
 }
