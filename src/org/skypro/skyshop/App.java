@@ -161,11 +161,11 @@ public class App {
         String[] searchQueries = {"корм", "аквариум", "попугай", "уход"};
         for (String query : searchQueries) {
             System.out.println("Результаты поиска по запросу: '" + query + "'");
-            Map<String, Searchable> results = searchEngine.search(query);
+            List<Searchable> results = searchEngine.search(query);
 
             if (!results.isEmpty()) {
-                for (Map.Entry<String, Searchable> entry : results.entrySet()) {
-                    System.out.println("- " + entry.getValue().getStringRepresentation());
+                for (Searchable result : results) {
+                    System.out.println("- " + result.getStringRepresentation());
                 }
             } else {
                 System.out.println("Ничего не найдено");
@@ -173,13 +173,12 @@ public class App {
         }
 
         System.out.println("Проверка ограничения в 5 результатов (теперь нет ограничения):");
-        Map<String, Searchable> manyResults = searchEngine.search("о");
+        List<Searchable> manyResults = searchEngine.search("о");
         System.out.println("Найдено результатов: " + manyResults.size());
 
         System.out.println("Детальная информация о найденных объектах:");
-        Map<String, Searchable> detailedResults = searchEngine.search("корм для кошек");
-        for (Map.Entry<String, Searchable> entry : detailedResults.entrySet()) {
-            Searchable result = entry.getValue();
+        List<Searchable> detailedResults = searchEngine.search("корм для кошек");
+        for (Searchable result : detailedResults) {
             System.out.println("Тип: " + result.getContentType());
             System.out.println("Представление: " + result.getStringRepresentation());
             if (result instanceof Product) {

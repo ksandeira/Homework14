@@ -14,11 +14,11 @@ public class SearchEngine {
         searchables.add(searchable);
     }
 
-    public Map<String, Searchable> search(String query) {
-        Map<String, Searchable> results = new TreeMap<>();
+    public List<Searchable> search(String query) {
+        List<Searchable> results = new ArrayList<>();
         for (Searchable item : searchables) {
             if (item != null && item.getSearchTerm().toLowerCase().contains(query.toLowerCase())) {
-                results.put(item.getName(), item);
+                results.add(item);
             }
         }
         return results;
