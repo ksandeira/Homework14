@@ -2,14 +2,12 @@ package org.skypro.skyshop;
 
 import org.skypro.skyshop.product.*;
 import org.skypro.skyshop.basket.ProductBasket;
-import org.skypro.skyshop.product.DiscountedProduct;
-import org.skypro.skyshop.product.FixPriceProduct;
 import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.search.Searchable;
 import org.skypro.skyshop.exception.BestResultNotFound;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public class App {
     public static void main(String[] args) {
@@ -82,6 +80,9 @@ public class App {
         searchEngine.add(catCareArticle);
         searchEngine.add(fishArticle);
         searchEngine.add(parrotArticle);
+
+        searchEngine.add(catFood);
+        searchEngine.add(dogCareArticle);
 
         ProductBasket basket = new ProductBasket();
 
@@ -161,7 +162,7 @@ public class App {
         String[] searchQueries = {"корм", "аквариум", "попугай", "уход"};
         for (String query : searchQueries) {
             System.out.println("Результаты поиска по запросу: '" + query + "'");
-            List<Searchable> results = searchEngine.search(query);
+            Set<Searchable> results = searchEngine.search(query);
 
             if (!results.isEmpty()) {
                 for (Searchable result : results) {
@@ -173,11 +174,11 @@ public class App {
         }
 
         System.out.println("Проверка ограничения в 5 результатов (теперь нет ограничения):");
-        List<Searchable> manyResults = searchEngine.search("о");
+        Set<Searchable> manyResults = searchEngine.search("о");
         System.out.println("Найдено результатов: " + manyResults.size());
 
         System.out.println("Детальная информация о найденных объектах:");
-        List<Searchable> detailedResults = searchEngine.search("корм для кошек");
+        Set<Searchable> detailedResults = searchEngine.search("корм для кошек");
         for (Searchable result : detailedResults) {
             System.out.println("Тип: " + result.getContentType());
             System.out.println("Представление: " + result.getStringRepresentation());
@@ -185,7 +186,6 @@ public class App {
                 System.out.println("Стоимость: " + ((Product) result).getCost() + " руб.");
             } else if (result instanceof Article) {
                 String content = ((Article) result).getContent();
-
                 System.out.println("Содержание: " + (content.length() > 50 ? content.substring(0,50) + "..." : content));
             }
         }
@@ -210,10 +210,16 @@ public class App {
         for (String query : testQueries) {
             try {
                 Searchable bestMatch = searchEngine.findBestMatch(query);
-                System.out.println("Лучший результат для '" + query + "':" + bestMatch.getStringRepresentation());
+                System.out.println("Лучший результат для '" + query + "': " + bestMatch.getStringRepresentation());
             } catch (BestResultNotFound e) {
                 System.out.println("Для запроса '" + query + "' ничего не найдено: " + e.getMessage());
             }
+        }
+
+        System.out.println("Демонстрация сортировки результатов (от самого длинного названия к самому короткому):");
+        Set<Searchable> sortedResults = searchEngine.search("содержание");
+        for (Searchable result : sortedResults) {
+            System.out.println("Название: '" + result.getName() + "' (длина: " + result.getName().length() + ")");
         }
     }
 }
