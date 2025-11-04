@@ -2,6 +2,7 @@ package org.skypro.skyshop.basket;
 
 import org.skypro.skyshop.product.Product;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ProductBasket {
     private final List<Product> products;
@@ -15,11 +16,7 @@ public class ProductBasket {
     }
 
     public int getTotalCost() {
-        int total = 0;
-        for (Product product : products) {
-            total += product.getCost();
-        }
-        return total;
+        return products.stream().mapToInt(Product::getCost).sum();
     }
 
     public void printBasket() {
@@ -29,27 +26,22 @@ public class ProductBasket {
         }
 
         System.out.println("Содержимое корзины:");
-        int specialCount = 0;
-        int index = 1;
+        int specialCount = getSpecialCount();
+        final int[] index = {1};
 
-        for (Product product : products) {
-                System.out.println((index++) + ". " + product.toString());
-                if (product.isSpecial()) {
-                    specialCount++;
-                }
-        }
+        products.forEach(product -> {System.out.println((index[0]++) + ". " + product.toString());});
+
         System.out.println("Итого: " + getTotalCost() + " руб.");
         System.out.println("Специальных товаров: " + specialCount);
         System.out.println("Общее количество товаров: " + getProductCount());
     }
 
+    private int getSpecialCount() {
+        return (int) products.stream().filter(Product::isSpecial).count();
+    }
+
     public boolean containsProductByName(String name) {
-        for (Product product : products) {
-            if (product.getName().equals(name)) {
-                return true;
-            }
-        }
-        return false;
+        return products.stream().anyMatch(product -> product.getName().equals(name));
     }
 
     public void clearBasket() {
@@ -64,21 +56,10 @@ public class ProductBasket {
         return false;
     }
 
-    public boolean isEmpty() {
-        return products.isEmpty();
-    }
-
     public List<Product> removeProductsByName(String name){
-        List<Product> removedProducts = new ArrayList<>();
-        Iterator<Product> iterator = products.iterator();
+        List<Product> removedProducts = products.stream().filter(product -> product.getName().equals(name)).collect(Collectors.toList());
+        products.removeIf(product -> product.getName().equals(name));
 
-        while (iterator.hasNext()) {
-            Product product = iterator.next();
-            if (product.getName().equals(name)) {
-                removedProducts.add(product);
-                iterator.remove();
-            }
-        }
         return removedProducts;
     }
 }
